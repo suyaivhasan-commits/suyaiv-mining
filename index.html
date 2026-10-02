@@ -1,20 +1,85 @@
-+<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUYAIV Mining</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SUYAIV Mining</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #111827;
+      color: white;
+      text-align: center;
+    }
+
+    .app {
+      max-width: 420px;
+      margin: auto;
+    }
+
+    h1 {
+      margin-top: 30px;
+      font-size: 30px;
+    }
+
+    .card {
+      margin-top: 25px;
+      padding: 25px;
+      border-radius: 20px;
+      background: #1f2937;
+    }
+
+    .balance {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .rate {
+      color: #9ca3af;
+      margin-bottom: 25px;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
 
+  <div class="app">
+
     <h1>SUYAIV Mining</h1>
-    <p>Welcome to SUYAIV Mining</p>
 
-    <h2>Balance</h2>
-    <p>0 SYV</p>
+    <div class="card">
 
-    <button>Start Mining</button>
+      <p>Your Balance</p>
+
+      <div class="balance">
+        0 SYV
+      </div>
+
+      <div class="rate">
+        Mining Rate: 1 SYV / hour
+      </div>
+
+      <button>
+        Start Mining
+      </button>
+
+    </div>
+
+  </div>
 
 </body>
 </html>
