@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>SUYAIV Mining</title>
 
   <style>
@@ -33,24 +34,33 @@
     }
 
     .balance {
-      font-size: 32px;
+      font-size: 36px;
       font-weight: bold;
       margin: 15px 0;
     }
 
     .rate {
       color: #9ca3af;
+      margin-bottom: 10px;
+    }
+
+    .timer {
+      color: #9ca3af;
       margin-bottom: 25px;
     }
 
     button {
       width: 100%;
-      padding: 15px;
+      padding: 16px;
       border: none;
       border-radius: 12px;
       font-size: 18px;
       font-weight: bold;
       cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
     }
   </style>
 </head>
@@ -66,20 +76,70 @@
       <p>Your Balance</p>
 
       <div class="balance">
-        0 SYV
+        <span id="balance">0.00</span> SYV
       </div>
 
       <div class="rate">
         Mining Rate: 1 SYV / hour
       </div>
 
-      <button>
+      <div class="timer" id="timer">
+        Mining is not active
+      </div>
+
+      <button id="mineButton" onclick="startMining()">
         Start Mining
       </button>
 
     </div>
 
   </div>
+
+  <script>
+
+    let balance = 0;
+    let mining = false;
+    let startTime = 0;
+
+    const miningRatePerSecond = 1 / 3600;
+
+    function updateScreen() {
+
+      document.getElementById("balance").innerText =
+        balance.toFixed(6);
+
+    }
+
+    function startMining() {
+
+      if (mining) {
+        return;
+      }
+
+      mining = true;
+      startTime = Date.now();
+
+      const button = document.getElementById("mineButton");
+
+      button.innerText = "Mining Active";
+      button.disabled = true;
+
+      document.getElementById("timer").innerText =
+        "Mining is running...";
+
+      setInterval(function() {
+
+        balance += miningRatePerSecond;
+
+        updateScreen();
+
+      }, 1000);
+
+    }
+
+    updateScreen();
+
+  </script>
 
 </body>
 </html>
