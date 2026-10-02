@@ -8,6 +8,8 @@
   
   <title>SUYAIV Mining</title>
 
+<p id="userInfo">Loading user...</p>
+  
   <style>
     body {
       margin: 0;
@@ -103,6 +105,21 @@
     let mining = false;
     let startTime = 0;
 
+const tg = window.Telegram.WebApp;
+
+tg.ready();
+tg.expand();
+
+const user = tg.initDataUnsafe.user;
+
+if (user) {
+  const name = user.first_name || "User";
+  const username = user.username ? "@" + user.username : "";
+
+  document.getElementById("userInfo").innerText =
+    "Welcome, " + name + " " + username;
+}
+    
     const miningRatePerSecond = 1 / 3600;
 
     function updateScreen() {
