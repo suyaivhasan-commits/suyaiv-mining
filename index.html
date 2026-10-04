@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
-  
   <title>SUYAIV Mining</title>
 
   <style>
@@ -25,7 +24,6 @@
 
     h1 {
       margin-top: 30px;
-      font-size: 30px;
     }
 
     .card {
@@ -43,122 +41,169 @@
 
     .rate {
       color: #9ca3af;
-      margin-bottom: 10px;
     }
 
-    .timer {
+    .status {
+      margin: 20px 0;
       color: #9ca3af;
-      margin-bottom: 25px;
     }
 
     button {
       width: 100%;
       padding: 16px;
-      border: none;
+      border: 0;
       border-radius: 12px;
       font-size: 18px;
       font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: 0.6;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="app">
+<div class="app">
 
-    <h1>SUYAIV Mining</h1>
+  <h1>SUYAIV Mining</h1>
 
-    <p id="userInfo">Loading user...</p>
+  <p id="userInfo">Connecting...</p>
 
-    <div class="card">
+  <div class="card">
 
-      <p>Your Balance</p>
+    <p>Your Balance</p>
 
-      <div class="balance">
-        <span id="balance">0.00</span> SYV
-      </div>
-
-      <div class="rate">
-        Mining Rate: 1 SYV / hour
-      </div>
-
-      <div class="timer" id="timer">
-        Mining is not active
-      </div>
-
-      <button id="mineButton" onclick="startMining()">
-        Start Mining
-      </button>
-
+    <div class="balance">
+      <span id="balance">0.000000</span> SYV
     </div>
+
+    <div class="rate">
+      Mining Rate: 1 SYV / hour
+    </div>
+
+    <div class="status" id="status">
+      Connecting to server...
+    </div>
+
+    <button id="mineButton" onclick="startMining()">
+      Start Mining
+    </button>
 
   </div>
 
-  <script>
+</div>
 
-    let balance = 0;
-    let mining = false;
-    let startTime = 0;
+<script>
 
 const tg = window.Telegram.WebApp;
 
 tg.ready();
 tg.expand();
 
+const FUNCTION_URL =
+  "https://vsfmhezdaetjxhudjkay.supabase.co/functions/v1/telegram-user";
+
+let mining = false;
+let balance = 0;
+
 const user = tg.initDataUnsafe.user;
 
 if (user) {
   const name = user.first_name || "User";
-  const username = user.username ? "@" + user.username : "";
+  const username = user.username
+    ? " @" + user.username
+    : "";
 
   document.getElementById("userInfo").innerText =
-    "Welcome, " + name + " " + username;
+    "Welcome to SUYAIV Mining, " + name + username;
 }
-    
-    const miningRatePerSecond = 1 / 3600;
 
-    function updateScreen() {
+async function connectUser() {
 
-      document.getElementById("balance").innerText =
-        balance.toFixed(6);
+  try {
+
+    if (!tg.initData) {
+      document.getElementById("status").innerText =
+        "Please open this app inside Telegram.";
+
+      return;
+    }
+
+    const response = await fetch(FUNCTION_URL, {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        initData: tg.initData
+      })
+
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || "Connection failed");
+    }
+
+    balance = Number(result.user.balance || 0);
+
+    mining = Boolean(result.user.mining_active);
+
+    document.getElementById("balance").innerText =
+      balance.toFixed(6);
+
+    if (mining) {
+
+      document.getElementById("mineButton").innerText =
+        "Mining Active";
+
+      document.getElementById("mineButton").disabled = true;
+
+      document.getElementById("status").innerText =
+        "Mining is active";
+
+    } else {
+
+      document.getElementById("status").innerText =
+        "Ready to start mining";
 
     }
 
-    function startMining() {
+  } catch (error) {
 
-      if (mining) {
-        return;
-      }
+    console.error(error);
 
-      mining = true;
-      startTime = Date.now();
+    document.getElementById("status").innerText =
+      "Server connection failed";
 
-      const button = document.getElementById("mineButton");
+  }
 
-      button.innerText = "Mining Active";
-      button.disabled = true;
+}
 
-      document.getElementById("timer").innerText =
-        "Mining is running...";
+function startMining() {
 
-      setInterval(function() {
+  if (mining) {
+    return;
+  }
 
-        balance += miningRatePerSecond;
+  mining = true;
 
-        updateScreen();
+  document.getElementById("mineButton").innerText =
+    "Mining Active";
 
-      }, 1000);
+  document.getElementById("mineButton").disabled =
+    true;
 
-    }
+  document.getElementById("status").innerText =
+    "Mining started";
 
-    updateScreen();
+}
 
-  </script>
+connectUser();
+
+</script>
 
 </body>
 </html>
